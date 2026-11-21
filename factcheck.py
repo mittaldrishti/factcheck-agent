@@ -25,6 +25,7 @@ DEFAULT_MODELS = {
     "gemini": "gemini-2.5-flash",
     "openai": "gpt-4o-mini",
     "anthropic": "claude-haiku-5-5",
+    "groq": "qwen/qwen3.8-27b",
 }
 
 
@@ -79,7 +80,7 @@ class Config:
     def from_env(cls, getter: Callable[[str], Optional[str]] = os.environ.get) -> "Config":
         cfg = cls()
         for provider, var in (("gemini", "GEMINI_API_KEY"), ("openai", "OPENAI_API_KEY"),
-                              ("anthropic", "ANTHROPIC_API_KEY")):
+                              ("anthropic", "ANTHROPIC_API_KEY"), ("groq", "GROQ_API_KEY")):
             if getter(var):
                 cfg.provider, cfg.llm_key = provider, getter(var)
                 break
@@ -166,6 +167,21 @@ def call_llm(cfg: Config, system: str, user: str) -> str:
             )
             r.raise_for_status()
             return "".join(b.get("text", "") for b in r.json()["content"])
+        if cfg.provider == "groq":
+            r = requests.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {cfg.llm_key}"},
+                json={
+                    "model": model,
+                    "temperature": 0,
+                    "response_format": {"type": "json_object"},
+                    "messages": [{"role": "system", "content": system},
+                                 {"role": "user", "content": user}],
+                },
+                timeout=cfg.timeout,
+            )
+            r.raise_for_status()
+            return r.json()["choices"][0]["message"]["content"]
     except requests.HTTPError as e:
         raise LLMError(f"{cfg.provider} API error {e.response.status_code}: {e.response.text[:300]}") from e
     except requests.RequestException as e:

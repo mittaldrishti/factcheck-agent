@@ -22,8 +22,8 @@ def get_cfg() -> fc.Config:
     with st.sidebar:
         st.header("Settings")
         st.caption("Keys are read from deployment secrets. Override here only if needed.")
-        provider = st.selectbox("LLM provider", ["gemini", "openai", "anthropic"],
-                                index=["gemini", "openai", "anthropic"].index(cfg.provider or "gemini"))
+        provider = st.selectbox("LLM provider", ["gemini", "openai", "anthropic", "groq"],
+                                index=["gemini", "openai", "anthropic", "groq"].index(cfg.provider or "gemini"))
         key = st.text_input("LLM API key (optional override)", type="password")
         tav = st.text_input("Tavily search key (optional override)", type="password")
         cfg.max_claims = st.slider("Max claims to check", 5, 30, 15)
@@ -32,7 +32,7 @@ def get_cfg() -> fc.Config:
         elif cfg.provider != provider:
             # a different provider was chosen but its secret may still exist
             alt = secret({"gemini": "GEMINI_API_KEY", "openai": "OPENAI_API_KEY",
-                          "anthropic": "ANTHROPIC_API_KEY"}[provider])
+                          "anthropic": "ANTHROPIC_API_KEY", "groq": "GROQ_API_KEY"}[provider])
             if alt:
                 cfg.provider, cfg.llm_key = provider, alt
         if tav:

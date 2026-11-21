@@ -25,7 +25,7 @@ DEFAULT_MODELS = {
     "gemini": "gemini-2.5-flash",
     "openai": "gpt-4o-mini",
     "anthropic": "claude-haiku-5-5",
-    "groq": "qwen/qwen3.8-27b",
+    "groq": "openai/gpt-oss-20b",
 }
 
 

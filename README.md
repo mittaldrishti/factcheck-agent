@@ -11,7 +11,7 @@ figures), verifies each against **live web search**, and flags it as:
 
 Every result carries an explanation, a confidence level and source links. Reports download as CSV/JSON.
 
-**Live app:** `<paste your deployed URL here>`
+**Live app:** https://mittaldrishti-factcheck-agent-app-mecvlh.streamlit.app
 
 ## How it works
 
